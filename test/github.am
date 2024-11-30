@@ -1,0 +1,67 @@
+import { echo_success, error, get_env_var } from "std/env"
+import { contains, len } from "std/text"
+import { file_read } from "std/fs"
+import {
+  get_release_json_url,
+  get_release_json,
+  get_release_download_urls
+} from "../src/github.am"
+
+fun test_get_release_json_url() {
+  let url_latest = "https://api.github.com/repos/mustardamus/zieh/releases/latest"
+  let url_version = "https://api.github.com/repos/mustardamus/zieh/releases/tags/v0.1.0"
+
+  let url = get_release_json_url("mustardamus/zieh", "latest")
+
+  if url == url_latest: echo_success(".")
+  else: error(".", 1)
+
+  let url = get_release_json_url("mustardamus/zieh", "0.1.0")
+
+  if url == url_version: echo_success(".")
+  else: error(".", 1)
+}
+
+fun test_get_release_json() {
+  if get_env_var("TEST_REMOTE") != "true" {
+    echo "    Remote testing not enabled"
+  } else {
+    let fof = get_release_json("mustardamus/nope", "latest") failed {
+      if status == 1: echo_success(".")
+      else: error(".", 1)
+    }
+
+    let release_json = get_release_json("mvdan/sh", "latest") failed {
+      error(".", 1)
+    }
+
+    if contains(release_json, "https://github.com/mvdan/sh"): echo_success(".")
+    else: error(".", 1)
+  
+    let release_json = get_release_json("mvdan/sh", "3.4.1") failed {
+      error(".", 1)
+    }
+
+    if contains(release_json, "3.4.1"): echo_success(".")
+    else: error(".", 1)
+  }
+}
+
+fun test_get_release_download_urls() {
+  let release_json = file_read("test/fixtures/mvdan_sh.json")?
+  let download_urls = get_release_download_urls(release_json)
+
+  if len(download_urls) == 9: echo_success(".")
+  else: error(".", 1)
+}
+
+main(args) {
+  echo "--- get_release_json_url()"
+  test_get_release_json_url()
+
+  echo "--- get_release_json()"
+  test_get_release_json()
+
+  echo "--- get_release_download_urls()"
+  test_get_release_download_urls()?
+}

@@ -1,0 +1,677 @@
+#!/usr/bin/env bash
+# Written in [Amber](https://amber-lang.com/)
+# version: 0.3.5-alpha
+# date: 2024-11-13 17:47:36
+file_read__2_v0() {
+    local path=$1
+    __AMBER_VAL_0=$(<"${path}")
+    __AS=$?
+    if [ $__AS != 0 ]; then
+        __AF_file_read2_v0=''
+        return $__AS
+    fi
+    __AF_file_read2_v0="${__AMBER_VAL_0}"
+    return 0
+}
+replace_once__18_v0() {
+    local source=$1
+    local pattern=$2
+    local replacement=$3
+    __AF_replace_once18_v0="${source/${pattern}/${replacement}}"
+    return 0
+}
+split__21_v0() {
+    local text=$1
+    local delimiter=$2
+    __AMBER_ARRAY_0=()
+    local result=("${__AMBER_ARRAY_0[@]}")
+    IFS="${delimiter}" read -rd '' -a result < <(printf %s "$text")
+    __AS=$?
+    __AF_split21_v0=("${result[@]}")
+    return 0
+}
+lines__22_v0() {
+    local text=$1
+    split__21_v0 "${text}" "
+"
+    __AF_split21_v0__27_12=("${__AF_split21_v0[@]}")
+    __AF_lines22_v0=("${__AF_split21_v0__27_12[@]}")
+    return 0
+}
+trim_left__25_v0() {
+    local text=$1
+    __AMBER_VAL_1=$(echo "${text}" | sed -e 's/^[[:space:]]*//')
+    __AS=$?
+    __AF_trim_left25_v0="${__AMBER_VAL_1}"
+    return 0
+}
+trim_right__26_v0() {
+    local text=$1
+    __AMBER_VAL_2=$(echo "${text}" | sed -e 's/[[:space:]]*$//')
+    __AS=$?
+    __AF_trim_right26_v0="${__AMBER_VAL_2}"
+    return 0
+}
+trim__27_v0() {
+    local text=$1
+    trim_right__26_v0 "${text}"
+    __AF_trim_right26_v0__52_22="${__AF_trim_right26_v0}"
+    trim_left__25_v0 "${__AF_trim_right26_v0__52_22}"
+    __AF_trim_left25_v0__52_12="${__AF_trim_left25_v0}"
+    __AF_trim27_v0="${__AF_trim_left25_v0__52_12}"
+    return 0
+}
+lower__28_v0() {
+    local text=$1
+    __AMBER_VAL_3=$(echo "${text}" | tr '[:upper:]' '[:lower:]')
+    __AS=$?
+    __AF_lower28_v0="${__AMBER_VAL_3}"
+    return 0
+}
+len__32_v0() {
+    local value=("${!1}")
+    if [ 0 != 0 ]; then
+        __AMBER_VAL_4=$(echo "${#value}")
+        __AS=$?
+        __AF_len32_v0="${__AMBER_VAL_4}"
+        return 0
+    else
+        __AMBER_VAL_5=$(echo "${#value[@]}")
+        __AS=$?
+        __AF_len32_v0="${__AMBER_VAL_5}"
+        return 0
+    fi
+}
+len__32_v1() {
+    local value=$1
+    if [ 1 != 0 ]; then
+        __AMBER_VAL_6=$(echo "${#value}")
+        __AS=$?
+        __AF_len32_v1="${__AMBER_VAL_6}"
+        return 0
+    else
+        __AMBER_VAL_7=$(echo "${#value[@]}")
+        __AS=$?
+        __AF_len32_v1="${__AMBER_VAL_7}"
+        return 0
+    fi
+}
+contains__33_v0() {
+    local text=$1
+    local phrase=$2
+    __AMBER_VAL_8=$(if [[ "${text}" == *"${phrase}"* ]]; then
+        echo 1
+    fi)
+    __AS=$?
+    local result="${__AMBER_VAL_8}"
+    __AF_contains33_v0=$(
+        [ "_${result}" != "_1" ]
+        echo $?
+    )
+    return 0
+}
+starts_with__35_v0() {
+    local text=$1
+    local prefix=$2
+    __AMBER_VAL_9=$(if [[ "${text}" == "${prefix}"* ]]; then
+        echo 1
+    fi)
+    __AS=$?
+    local result="${__AMBER_VAL_9}"
+    __AF_starts_with35_v0=$(
+        [ "_${result}" != "_1" ]
+        echo $?
+    )
+    return 0
+}
+ends_with__36_v0() {
+    local text=$1
+    local suffix=$2
+    __AMBER_VAL_10=$(if [[ "${text}" == *"${suffix}" ]]; then
+        echo 1
+    fi)
+    __AS=$?
+    local result="${__AMBER_VAL_10}"
+    __AF_ends_with36_v0=$(
+        [ "_${result}" != "_1" ]
+        echo $?
+    )
+    return 0
+}
+slice__37_v0() {
+    local text=$1
+    local index=$2
+    local length=$3
+    if [ $(echo ${length} '==' 0 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//') != 0 ]; then
+        len__32_v1 "${text}"
+        __AF_len32_v1__129_30="$__AF_len32_v1"
+        length=$(echo "$__AF_len32_v1__129_30" '-' ${index} | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
+    fi
+    if [ $(echo ${length} '<=' 0 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//') != 0 ]; then
+        __AF_slice37_v0=""
+        return 0
+    fi
+    __AMBER_VAL_11=$(printf "%.${length}s" "${text:${index}}")
+    __AS=$?
+    __AF_slice37_v0="${__AMBER_VAL_11}"
+    return 0
+}
+is_command__76_v0() {
+    local command=$1
+    [ -x "$(command -v ${command})" ]
+    __AS=$?
+    if [ $__AS != 0 ]; then
+        __AF_is_command76_v0=0
+        return 0
+    fi
+    __AF_is_command76_v0=1
+    return 0
+}
+exit__80_v0() {
+    local code=$1
+    exit "${code}"
+    __AS=$?
+}
+array_last__107_v0() {
+    local arr=("${!1}")
+    len__32_v0 arr[@]
+    __AF_len32_v0__4_13="$__AF_len32_v0"
+    __AF_array_last107_v0="${arr[$(echo "$__AF_len32_v0__4_13" '-' 1 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//')]}"
+    return 0
+}
+array_filter__108_v0() {
+    local arr=("${!1}")
+    local and_filters=("${!2}")
+    __AMBER_ARRAY_1=()
+    local matches=("${__AMBER_ARRAY_1[@]}")
+    for item in "${arr[@]}"; do
+        local and_filter_matches=0
+        for and_filter in "${and_filters[@]}"; do
+            split__21_v0 "${and_filter}" ","
+            __AF_split21_v0__14_22=("${__AF_split21_v0[@]}")
+            for or_filter in "${__AF_split21_v0__14_22[@]}"; do
+                trim__27_v0 "${or_filter}"
+                __AF_trim27_v0__15_23="${__AF_trim27_v0}"
+                contains__33_v0 "${item}" "${__AF_trim27_v0__15_23}"
+                __AF_contains33_v0__15_8="$__AF_contains33_v0"
+                if [ "$__AF_contains33_v0__15_8" != 0 ]; then
+                    and_filter_matches=$(echo ${and_filter_matches} '+' 1 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
+                    break
+                fi
+            done
+        done
+        len__32_v0 and_filters[@]
+        __AF_len32_v0__22_6="$__AF_len32_v0"
+        if [ $(echo "$__AF_len32_v0__22_6" '==' ${and_filter_matches} | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//') != 0 ]; then
+            __AMBER_ARRAY_2=("${item}")
+            matches+=("${__AMBER_ARRAY_2[@]}")
+        fi
+    done
+    __AF_array_filter108_v0=("${matches[@]}")
+    return 0
+}
+parse_values__110_v0() {
+    local args=("${!1}")
+    local key_char=$2
+    local key_word=$3
+    __AMBER_ARRAY_3=()
+    local values=("${__AMBER_ARRAY_3[@]}")
+    local char="-${key_char}"
+    local word="--${key_word}"
+    index=0
+    for arg in "${args[@]}"; do
+        contains__33_v0 "${arg}" "="
+        __AF_contains33_v0__23_4="$__AF_contains33_v0"
+        if [ $(
+            [ "_${arg}" != "_${char}" ]
+            echo $?
+        ) != 0 ]; then
+            __AMBER_ARRAY_4=("${args[$(echo ${index} '+' 1 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//')]}")
+            values+=("${__AMBER_ARRAY_4[@]}")
+        elif [ $(
+            [ "_${arg}" != "_${word}" ]
+            echo $?
+        ) != 0 ]; then
+            __AMBER_ARRAY_5=("${args[$(echo ${index} '+' 1 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//')]}")
+            values+=("${__AMBER_ARRAY_5[@]}")
+        elif [ "$__AF_contains33_v0__23_4" != 0 ]; then
+            split__21_v0 "${arg}" "="
+            __AF_split21_v0__24_20=("${__AF_split21_v0[@]}")
+            local splitted=("${__AF_split21_v0__24_20[@]}")
+            trim__27_v0 "${splitted[0]}"
+            __AF_trim27_v0__25_15="${__AF_trim27_v0}"
+            local key="${__AF_trim27_v0__25_15}"
+            trim__27_v0 "${splitted[1]}"
+            __AF_trim27_v0__26_15="${__AF_trim27_v0}"
+            local val="${__AF_trim27_v0__26_15}"
+            if [ $(
+                [ "_${key}" != "_${char}" ]
+                echo $?
+            ) != 0 ]; then
+                __AMBER_ARRAY_6=("${val}")
+                values+=("${__AMBER_ARRAY_6[@]}")
+            elif [ $(
+                [ "_${key}" != "_${word}" ]
+                echo $?
+            ) != 0 ]; then
+                __AMBER_ARRAY_7=("${val}")
+                values+=("${__AMBER_ARRAY_7[@]}")
+            fi
+        fi
+        ((index++)) || true
+    done
+    __AF_parse_values110_v0=("${values[@]}")
+    return 0
+}
+parse_flag__111_v0() {
+    local args=("${!1}")
+    local flag_char=$2
+    local flag_word=$3
+    local match=0
+    for arg in "${args[@]}"; do
+        if [ $(
+            [ "_${arg}" != "_-${flag_char}" ]
+            echo $?
+        ) != 0 ]; then
+            match=1
+        fi
+        if [ $(
+            [ "_${arg}" != "_--${flag_word}" ]
+            echo $?
+        ) != 0 ]; then
+            match=1
+        fi
+        if [ $(echo ${match} '==' 1 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//') != 0 ]; then
+            break
+        fi
+    done
+    __AF_parse_flag111_v0=${match}
+    return 0
+}
+parse_github_repo__112_v0() {
+    local args=("${!1}")
+    array_last__107_v0 args[@]
+    __AF_array_last107_v0__52_17="${__AF_array_last107_v0}"
+    local last_arg="${__AF_array_last107_v0__52_17}"
+    local github_repo="${last_arg}"
+    local github_domain="https://github.com/"
+    starts_with__35_v0 "${last_arg}" "${github_domain}"
+    __AF_starts_with35_v0__56_5="$__AF_starts_with35_v0"
+    if [ "$__AF_starts_with35_v0__56_5" != 0 ]; then
+        replace_once__18_v0 "${last_arg}" "${github_domain}" ""
+        __AF_replace_once18_v0__57_21="${__AF_replace_once18_v0}"
+        local github_repo="${__AF_replace_once18_v0__57_21}"
+    fi
+    contains__33_v0 "${github_repo}" "@"
+    __AF_contains33_v0__60_5="$__AF_contains33_v0"
+    if [ "$__AF_contains33_v0__60_5" != 0 ]; then
+        split__21_v0 "${github_repo}" "@"
+        __AF_split21_v0__61_21=("${__AF_split21_v0[@]}")
+        local github_repo=("${__AF_split21_v0__61_21[@]}")
+        __AMBER_ARRAY_8=(0)
+        echo "${__AMBER_ARRAY_8[@]}" >/dev/null 2>&1
+    fi
+    ends_with__36_v0 "${github_repo}" "/"
+    __AF_ends_with36_v0__64_5="$__AF_ends_with36_v0"
+    if [ "$__AF_ends_with36_v0__64_5" != 0 ]; then
+        len__32_v1 "${github_repo}"
+        __AF_len32_v1__65_43="$__AF_len32_v1"
+        slice__37_v0 "${github_repo}" 0 $(echo "$__AF_len32_v1__65_43" '-' 1 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//')
+        __AF_slice37_v0__65_21="${__AF_slice37_v0}"
+        local github_repo="${__AF_slice37_v0__65_21}"
+    fi
+    split__21_v0 "${github_repo}" "/"
+    __AF_split21_v0__68_9=("${__AF_split21_v0[@]}")
+    len__32_v0 __AF_split21_v0__68_9[@]
+    __AF_len32_v0__68_5="$__AF_len32_v0"
+    if [ $(echo "$__AF_len32_v0__68_5" '!=' 2 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//') != 0 ]; then
+        __AF_parse_github_repo112_v0=''
+        return 1
+    fi
+    __AF_parse_github_repo112_v0="${github_repo}"
+    return 0
+}
+parse_github_version__113_v0() {
+    local args=("${!1}")
+    array_last__107_v0 args[@]
+    __AF_array_last107_v0__76_17="${__AF_array_last107_v0}"
+    local last_arg="${__AF_array_last107_v0__76_17}"
+    split__21_v0 "${last_arg}" "@"
+    __AF_split21_v0__77_19=("${__AF_split21_v0[@]}")
+    local repo_split=("${__AF_split21_v0__77_19[@]}")
+    len__32_v0 repo_split[@]
+    __AF_len32_v0__79_5="$__AF_len32_v0"
+    if [ $(echo "$__AF_len32_v0__79_5" '==' 2 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//') != 0 ]; then
+        __AF_parse_github_version113_v0="${repo_split[1]}"
+        return 0
+    fi
+    __AF_parse_github_version113_v0="latest"
+    return 0
+}
+get_arch__121_v0() {
+    __AMBER_VAL_12=$(uname -m)
+    __AS=$?
+    lower__28_v0 "${__AMBER_VAL_12}"
+    __AF_lower28_v0__4_9="${__AF_lower28_v0}"
+    __AF_get_arch121_v0="${__AF_lower28_v0__4_9}"
+    return 0
+}
+get_os__122_v0() {
+    __AMBER_VAL_13=$(uname -s)
+    __AS=$?
+    lower__28_v0 "${__AMBER_VAL_13}"
+    __AF_lower28_v0__8_9="${__AF_lower28_v0}"
+    __AF_get_os122_v0="${__AF_lower28_v0__8_9}"
+    return 0
+}
+get_arch_aliases__123_v0() {
+    local arch=$1
+    local aliases_x86_64="x86_64,amd64"
+    contains__33_v0 "${aliases_x86_64}" "${arch}"
+    __AF_contains33_v0__15_3="$__AF_contains33_v0"
+    if [ "$__AF_contains33_v0__15_3" != 0 ]; then
+        __AF_get_arch_aliases123_v0="${aliases_x86_64}"
+        return 0
+    fi
+    __AF_get_arch_aliases123_v0=""
+    return 0
+}
+json_extract__133_v0() {
+    local json=$1
+    local path=$2
+    __AMBER_VAL_14=$(echo ${json} | jq -r ".${path}")
+    __AS=$?
+    __AF_json_extract133_v0="${__AMBER_VAL_14}"
+    return 0
+}
+get_release_json_url__135_v0() {
+    local repo_name=$1
+    local version=$2
+    local base_url="https://api.github.com/repos/${repo_name}/releases"
+    if [ $(
+        [ "_${version}" != "_latest" ]
+        echo $?
+    ) != 0 ]; then
+        __AF_get_release_json_url135_v0="${base_url}/${version}"
+        return 0
+    else
+        __AF_get_release_json_url135_v0="${base_url}/tags/v${version}"
+        return 0
+    fi
+}
+get_release_json__136_v0() {
+    local repo_name=$1
+    local version=$2
+    get_release_json_url__135_v0 "${repo_name}" "${version}"
+    __AF_get_release_json_url135_v0__12_12="${__AF_get_release_json_url135_v0}"
+    local url="${__AF_get_release_json_url135_v0__12_12}"
+    __AMBER_VAL_15=$(curl -sL ${url})
+    __AS=$?
+    local json="${__AMBER_VAL_15}"
+    json_extract__133_v0 "${json}" "status"
+    __AF_json_extract133_v0__14_20="${__AF_json_extract133_v0}"
+    local status_code="${__AF_json_extract133_v0__14_20}"
+    if [ $(
+        [ "_${status_code}" == "_null" ]
+        echo $?
+    ) != 0 ]; then
+        json_extract__133_v0 "${json}" "message"
+        __AF_json_extract133_v0__17_17="${__AF_json_extract133_v0}"
+        local message="${__AF_json_extract133_v0__17_17}"
+        echo "Failed getting repo info for '${repo_name}' - ${message} (${status_code})"
+        __AF_get_release_json136_v0=''
+        return 1
+    fi
+    __AF_get_release_json136_v0="${json}"
+    return 0
+}
+get_release_download_urls__137_v0() {
+    local release_json=$1
+    json_extract__133_v0 "${release_json}" "assets[].browser_download_url"
+    __AF_json_extract133_v0__26_13="${__AF_json_extract133_v0}"
+    local urls="${__AF_json_extract133_v0__26_13}"
+    lines__22_v0 "${urls}"
+    __AF_lines22_v0__27_9=("${__AF_lines22_v0[@]}")
+    __AF_get_release_download_urls137_v0=("${__AF_lines22_v0__27_9[@]}")
+    return 0
+}
+basename__143_v0() {
+    local file_path=$1
+    split__21_v0 "${file_path}" "/"
+    __AF_split21_v0__19_19=("${__AF_split21_v0[@]}")
+    local path_parts=("${__AF_split21_v0__19_19[@]}")
+    len__32_v0 path_parts[@]
+    __AF_len32_v0__20_20="$__AF_len32_v0"
+    __AF_basename143_v0="${path_parts[$(echo "$__AF_len32_v0__20_20" '-' 1 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//')]}"
+    return 0
+}
+create_tmp_dir__144_v0() {
+    __AMBER_VAL_16=$(mktemp -d)
+    __AS=$?
+    if [ $__AS != 0 ]; then
+        __AF_create_tmp_dir144_v0=''
+        return $__AS
+    fi
+    local tmp_dir="${__AMBER_VAL_16}"
+    __AF_create_tmp_dir144_v0="${tmp_dir}"
+    return 0
+}
+download__175_v0() {
+    local url=$1
+    local path=$2
+    is_command__76_v0 "curl"
+    __AF_is_command76_v0__10_9="$__AF_is_command76_v0"
+    is_command__76_v0 "wget"
+    __AF_is_command76_v0__13_9="$__AF_is_command76_v0"
+    is_command__76_v0 "aria2c"
+    __AF_is_command76_v0__16_9="$__AF_is_command76_v0"
+    if [ "$__AF_is_command76_v0__10_9" != 0 ]; then
+        curl -L -o "${path}" "${url}"
+        __AS=$?
+    elif [ "$__AF_is_command76_v0__13_9" != 0 ]; then
+        wget "${url}" -P "${path}"
+        __AS=$?
+    elif [ "$__AF_is_command76_v0__16_9" != 0 ]; then
+        aria2c "${url}" -d "${path}"
+        __AS=$?
+    else
+        __AF_download175_v0=0
+        return 0
+    fi
+    __AF_download175_v0=1
+    return 0
+}
+extract_hash__184_v0() {
+    local content=$1
+    local file_name=$2
+    local hash=""
+    lines__22_v0 "${content}"
+    __AF_lines22_v0__6_15=("${__AF_lines22_v0[@]}")
+    for line in "${__AF_lines22_v0__6_15[@]}"; do
+        ends_with__36_v0 "${line}" "${file_name}"
+        __AF_ends_with36_v0__7_6="$__AF_ends_with36_v0"
+        if [ "$__AF_ends_with36_v0__7_6" != 0 ]; then
+            split__21_v0 "${line}" " "
+            __AF_split21_v0__8_15=("${__AF_split21_v0[@]}")
+            local hash=("${__AF_split21_v0__8_15[@]}")
+            __AMBER_ARRAY_9=(0)
+            echo "${__AMBER_ARRAY_9[@]}" >/dev/null 2>&1
+            break
+        fi
+    done
+    __AF_extract_hash184_v0="${hash}"
+    return 0
+}
+verify_file__185_v0() {
+    local file_path=$1
+    local expected_hash=$2
+    local verify_binary=""
+    len__32_v1 "${expected_hash}"
+    __AF_len32_v1__18_17="$__AF_len32_v1"
+    local hash_len="$__AF_len32_v1__18_17"
+    if [ $(echo ${hash_len} '==' 64 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//') != 0 ]; then
+        local verify_binary="sha256sum"
+    fi
+    # todo fail if no binary
+    __AMBER_VAL_17=$(${verify_binary} ${file_path})
+    __AS=$?
+    local source_hash_out="${__AMBER_VAL_17}"
+    extract_hash__184_v0 "${source_hash_out}" "${file_path}"
+    __AF_extract_hash184_v0__27_20="${__AF_extract_hash184_v0}"
+    local source_hash="${__AF_extract_hash184_v0__27_20}"
+    if [ $(
+        [ "_${source_hash}" != "_${expected_hash}" ]
+        echo $?
+    ) != 0 ]; then
+        __AF_verify_file185_v0=1
+        return 0
+    else
+        __AF_verify_file185_v0=0
+        return 0
+    fi
+}
+download_file__188_v0() {
+    local dest_dir=$1
+    local url=$2
+    split__21_v0 "${url}" "/"
+    __AF_split21_v0__9_18=("${__AF_split21_v0[@]}")
+    local url_parts=("${__AF_split21_v0__9_18[@]}")
+    array_last__107_v0 url_parts[@]
+    __AF_array_last107_v0__10_18="${__AF_array_last107_v0}"
+    local file_name="${__AF_array_last107_v0__10_18}"
+    local dest_path="${dest_dir}/${file_name}"
+    download__175_v0 "${url}" "${dest_path}" >/dev/null 2>&1
+    __AF_download175_v0__13_9="$__AF_download175_v0"
+    echo "$__AF_download175_v0__13_9" >/dev/null 2>&1
+    __AF_download_file188_v0="${dest_path}"
+    return 0
+}
+download_file_and_verify__189_v0() {
+    local dest_dir=$1
+    local url=$2
+    local sums_url=$3
+    download_file__188_v0 "${dest_dir}" "${url}"
+    __AF_download_file188_v0__18_18="${__AF_download_file188_v0}"
+    local file_path="${__AF_download_file188_v0__18_18}"
+    basename__143_v0 "${file_path}"
+    __AF_basename143_v0__19_18="${__AF_basename143_v0}"
+    local file_name="${__AF_basename143_v0__19_18}"
+    download_file__188_v0 "${dest_dir}" "${sums_url}"
+    __AF_download_file188_v0__20_18="${__AF_download_file188_v0}"
+    local sums_path="${__AF_download_file188_v0__20_18}"
+    file_read__2_v0 "${sums_path}"
+    __AS=$?
+    if [ $__AS != 0 ]; then
+        __AF_download_file_and_verify189_v0=''
+        return $__AS
+    fi
+    __AF_file_read2_v0__21_21="${__AF_file_read2_v0}"
+    local sums_content="${__AF_file_read2_v0__21_21}"
+    extract_hash__184_v0 "${sums_content}" "${file_name}"
+    __AF_extract_hash184_v0__22_13="${__AF_extract_hash184_v0}"
+    local hash="${__AF_extract_hash184_v0__22_13}"
+    verify_file__185_v0 "${file_path}" "${hash}"
+    __AF_verify_file185_v0__23_17="$__AF_verify_file185_v0"
+    local verified="$__AF_verify_file185_v0__23_17"
+    echo "${hash}"
+    echo ${verified}
+}
+__0_VERSION="0.1.0"
+args=("$0" "$@")
+parse_flag__111_v0 args[@] "h" "help"
+__AF_parse_flag111_v0__18_5="$__AF_parse_flag111_v0"
+if [ "$__AF_parse_flag111_v0__18_5" != 0 ]; then
+    echo "Helptext"
+    exit__80_v0 0
+    __AF_exit80_v0__20_3="$__AF_exit80_v0"
+    echo "$__AF_exit80_v0__20_3" >/dev/null 2>&1
+fi
+parse_flag__111_v0 args[@] "v" "version"
+__AF_parse_flag111_v0__23_5="$__AF_parse_flag111_v0"
+if [ "$__AF_parse_flag111_v0__23_5" != 0 ]; then
+    echo "${__0_VERSION}"
+    exit__80_v0 0
+    __AF_exit80_v0__25_3="$__AF_exit80_v0"
+    echo "$__AF_exit80_v0__25_3" >/dev/null 2>&1
+fi
+parse_github_repo__112_v0 args[@]
+__AS=$?
+if [ $__AS != 0 ]; then
+    echo "Could not parse GitHub repository name. Must be either:"
+    echo "- 'username/reponame'"
+    echo "- 'https://github.com/username/reponame'"
+    exit__80_v0 1
+    __AF_exit80_v0__32_3="$__AF_exit80_v0"
+    echo "$__AF_exit80_v0__32_3" >/dev/null 2>&1
+fi
+__AF_parse_github_repo112_v0__28_18="${__AF_parse_github_repo112_v0}"
+repo_name="${__AF_parse_github_repo112_v0__28_18}"
+parse_github_version__113_v0 args[@]
+__AF_parse_github_version113_v0__34_21="${__AF_parse_github_version113_v0}"
+repo_version="${__AF_parse_github_version113_v0__34_21}"
+parse_values__110_v0 args[@] "f" "filter"
+__AF_parse_values110_v0__35_20=("${__AF_parse_values110_v0[@]}")
+and_filters=("${__AF_parse_values110_v0__35_20[@]}")
+len__32_v0 and_filters[@]
+__AF_len32_v0__37_5="$__AF_len32_v0"
+if [ $(echo "$__AF_len32_v0__37_5" '==' 0 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//') != 0 ]; then
+    get_os__122_v0
+    __AF_get_os122_v0__38_12="${__AF_get_os122_v0}"
+    os="${__AF_get_os122_v0__38_12}"
+    get_arch__121_v0
+    __AF_get_arch121_v0__39_14="${__AF_get_arch121_v0}"
+    arch="${__AF_get_arch121_v0__39_14}"
+    get_arch_aliases__123_v0 "${arch}"
+    __AF_get_arch_aliases123_v0__40_22="${__AF_get_arch_aliases123_v0}"
+    arch_aliases="${__AF_get_arch_aliases123_v0__40_22}"
+    __AMBER_ARRAY_10=("${os}" "${arch_aliases}")
+    and_filters=("${__AMBER_ARRAY_10[@]}")
+fi
+get_release_json__136_v0 "${repo_name}" "${repo_version}"
+__AS=$?
+if [ $__AS != 0 ]; then
+    exit__80_v0 1
+    __AF_exit80_v0__45_3="$__AF_exit80_v0"
+    echo "$__AF_exit80_v0__45_3" >/dev/null 2>&1
+fi
+__AF_get_release_json136_v0__44_21="${__AF_get_release_json136_v0}"
+release_json="${__AF_get_release_json136_v0__44_21}"
+get_release_download_urls__137_v0 "${release_json}"
+__AF_get_release_download_urls137_v0__48_30=("${__AF_get_release_download_urls137_v0[@]}")
+release_download_urls=("${__AF_get_release_download_urls137_v0__48_30[@]}")
+array_filter__108_v0 release_download_urls[@] and_filters[@]
+__AF_array_filter108_v0__49_22=("${__AF_array_filter108_v0[@]}")
+download_urls=("${__AF_array_filter108_v0__49_22[@]}")
+len__32_v0 download_urls[@]
+__AF_len32_v0__51_5="$__AF_len32_v0"
+if [ $(echo "$__AF_len32_v0__51_5" '==' 1 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//') != 0 ]; then
+    __AMBER_ARRAY_11=("/sha256sums,/SHA256SUMS,/sha512sums,/SHA512SUMS")
+    and_filters=("${__AMBER_ARRAY_11[@]}")
+    array_filter__108_v0 release_download_urls[@] and_filters[@]
+    __AF_array_filter108_v0__53_19=("${__AF_array_filter108_v0[@]}")
+    sums_urls=("${__AF_array_filter108_v0__53_19[@]}")
+    create_tmp_dir__144_v0
+    __AS=$?
+    if [ $__AS != 0 ]; then
+
+        exit $__AS
+    fi
+    __AF_create_tmp_dir144_v0__54_17="${__AF_create_tmp_dir144_v0}"
+    tmp_dir="${__AF_create_tmp_dir144_v0__54_17}"
+    len__32_v0 sums_urls[@]
+    __AF_len32_v0__57_4="$__AF_len32_v0"
+    if [ $(echo "$__AF_len32_v0__57_4" '==' 1 | bc -l | sed '/\./ s/\.\{0,1\}0\{1,\}$//') != 0 ]; then
+        download_file_and_verify__189_v0 "${tmp_dir}" "${download_urls[0]}" "${sums_urls[0]}"
+        __AS=$?
+        if [ $__AS != 0 ]; then
+
+            exit $__AS
+        fi
+        __AF_download_file_and_verify189_v0__58_5="${__AF_download_file_and_verify189_v0}"
+        echo "${__AF_download_file_and_verify189_v0__58_5}" >/dev/null 2>&1
+    else
+        echo "Multiple sums TBD"
+    fi
+else
+    echo "Multiple download_urls TBD"
+fi

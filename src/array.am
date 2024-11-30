@@ -1,0 +1,28 @@
+import { len, split, contains, trim } from "std/text"
+
+pub fun array_last(arr: [Text]): Text {
+	return arr[len(arr) - 1]
+}
+
+pub fun array_filter(arr: [Text], and_filters: [Text]): [Text] {
+	let matches = [Text]
+
+	loop item in arr {
+		let and_filter_matches = 0
+
+		loop and_filter in and_filters {
+			loop or_filter in split(and_filter, ",") {
+				if contains(item, trim(or_filter)) {
+					and_filter_matches += 1
+					break
+				}
+			}
+		}
+
+		if len(and_filters) == and_filter_matches {
+			matches += [item]
+		}
+	}
+
+	return matches
+}

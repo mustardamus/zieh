@@ -1,0 +1,26 @@
+import { split, len } from "std/text"
+
+pub fun get_suffix(file_path: Text): Text {
+	let path_parts = split(file_path, ".")
+	let parts_num = len(path_parts)
+
+	if parts_num == 1: return ""
+	
+	let suffix = path_parts[parts_num - 1]
+
+	if path_parts[parts_num - 2] == "tar" {
+		let suffix = "tar.{suffix}"
+	}
+
+	return suffix
+}
+
+pub fun basename(file_path: Text): Text {
+	let path_parts = split(file_path, "/")
+	return path_parts[len(path_parts) - 1]
+}
+
+pub fun create_tmp_dir(): Text? {
+	let tmp_dir = $mktemp -d$?
+	return tmp_dir
+}

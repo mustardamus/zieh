@@ -1,0 +1,27 @@
+import { split, len, lines, ends_with } from "std/text"
+import { download } from "std/http"
+import { file_read } from "std/fs"
+import { array_last } from "./array.am"
+import { basename } from "./fs.am"
+import { extract_hash, verify_file } from "./verify.am"
+
+pub fun download_file(dest_dir: Text, url: Text): Text {
+	let url_parts = split(url, "/")
+	let file_name = array_last(url_parts)
+	let dest_path = "{dest_dir}/{file_name}"
+
+	silent download(url, dest_path)
+	return dest_path
+}
+
+pub fun download_file_and_verify(dest_dir: Text, url: Text, sums_url: Text): Text? {
+	let file_path = download_file(dest_dir, url)
+	let file_name = basename(file_path)
+	let sums_path = download_file(dest_dir, sums_url)
+	let sums_content = file_read(sums_path)?
+	let hash = extract_hash(sums_content, file_name)
+	let verified = verify_file(file_path, hash)
+	
+	echo hash
+	echo verified
+}

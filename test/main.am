@@ -1,0 +1,16 @@
+import { lines } from "std/text"
+
+main(args) {
+  let test_files = unsafe $find test/*.am$
+
+  loop test_file in lines(test_files) {
+    if {
+      test_file == "test/main.am": continue
+      test_file == "test/e2e.am": continue
+    }
+
+    echo "### {test_file}"
+    unsafe $amber {test_file}$
+    echo ""
+  }
+}

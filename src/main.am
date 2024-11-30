@@ -1,0 +1,66 @@
+import { exit } from "std/env"
+import { len } from "std/text"
+import {
+	parse_github_repo,
+	parse_github_version,
+	parse_values,
+	parse_flag
+} from "./args.am"
+import { array_filter } from "./array.am"
+import { get_arch, get_os, get_arch_aliases } from "./env.am"
+import { get_release_json, get_release_download_urls } from "./github.am"
+import { create_tmp_dir } from "./fs.am"
+import { download_file, download_file_and_verify } from "./download.am"
+
+let VERSION="0.1.0"
+
+main(args) {
+	if parse_flag(args, "h", "help") {
+		echo "Helptext"
+		exit(0)
+	}
+
+	if parse_flag(args, "v", "version") {
+		echo VERSION
+		exit(0)
+	}
+
+	let repo_name = parse_github_repo(args) failed {
+		echo "Could not parse GitHub repository name. Must be either:"
+		echo "- 'username/reponame'"
+		echo "- 'https://github.com/username/reponame'"
+		exit(1)
+	}
+	let repo_version = parse_github_version(args)
+	let and_filters = parse_values(args, "f", "filter")
+
+	if len(and_filters) == 0 {
+		let os = get_os()
+		let arch = get_arch()
+		let arch_aliases = get_arch_aliases(arch)
+		let and_filters = [os, arch_aliases]
+	}
+
+	let release_json = get_release_json(repo_name, repo_version) failed {
+		exit(1)
+	}
+
+	let release_download_urls = get_release_download_urls(release_json)
+	let download_urls = array_filter(release_download_urls, and_filters)
+
+	if len(download_urls) == 1 {
+		let and_filters = ["/sha256sums,/SHA256SUMS,/sha512sums,/SHA512SUMS"]
+		let sums_urls = array_filter(release_download_urls, and_filters)
+		let tmp_dir = create_tmp_dir()?
+
+		if {
+			len(sums_urls) == 1 {
+				download_file_and_verify(tmp_dir, download_urls[0], sums_urls[0])?
+			} else {
+				echo "Multiple sums TBD"
+			}
+		}
+	} else {
+		echo "Multiple download_urls TBD"
+	}
+}

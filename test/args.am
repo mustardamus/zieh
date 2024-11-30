@@ -1,0 +1,114 @@
+import { echo_success, error } from "std/env"
+import { len } from "std/text"
+import {
+	parse_values,
+	parse_flag,
+	parse_github_repo,
+	parse_github_version
+} from "../src/args.am"
+
+let fixture_args = [
+	"bash",
+	"zieh",
+	"-x",
+	"-f", "by_char",
+	"--filter", "by_word",
+	"-d", "in_between",
+	"-f=by_char_equal",
+	"--move",
+	"--filter=by_word_equal",
+	"mustardamus/zieh"
+]
+
+fun test_parse_values() {
+	let values = parse_values(fixture_args, "f", "filter")
+
+	if len(values) == 4: echo_success(".")
+	else: error(".", 1)
+
+	if values[0] == "by_char": echo_success(".")
+	else: error(".", 1)
+
+	if values[1] == "by_word": echo_success(".")
+	else: error(".", 1)
+
+	if values[2] == "by_char_equal": echo_success(".")
+	else: error(".", 1)
+
+	if values[3] == "by_word_equal": echo_success(".")
+	else: error(".", 1)
+}
+
+fun test_parse_flag(): Bool {
+	let flag_char = parse_flag(fixture_args, "x", "execute")
+
+	if flag_char == true: echo_success(".")
+	else: error(".", 1)
+
+	let flag_word = parse_flag(fixture_args, "m", "move")
+
+	if flag_word == true: echo_success(".")
+	else: error(".", 1)
+
+	let flag_none = parse_flag(fixture_args, "n", "none")
+
+	if flag_none == false: echo_success(".")
+	else: error(".", 1)
+}
+
+fun test_parse_github_repo() {
+	let github_repo = parse_github_repo(fixture_args) failed {
+		error(".", status)
+	}
+
+	if github_repo == "mustardamus/zieh": echo_success(".")
+
+	let github_repo = parse_github_repo(["https://github.com/mustardamus/zieh"]) failed {
+		error(".", status)
+	}
+
+	if github_repo == "mustardamus/zieh": echo_success(".")
+	
+	let github_repo = parse_github_repo(["https://github.com/mustardamus/zieh/"]) failed {
+		error(".", status)
+	}
+
+	if github_repo == "mustardamus/zieh": echo_success(".")
+	
+	let github_repo = parse_github_repo(["https://other.com/format/"]) failed {
+		echo_success(".")
+	}
+
+	let github_repo = parse_github_repo(["mustardamus/zieh@0.1.0"]) failed {
+		error(".", status)
+	}
+
+	if github_repo == "mustardamus/zieh": echo_success(".")
+	else: error(".", 1)
+}
+
+fun test_parse_github_version() {
+	let github_version = parse_github_version(fixture_args)
+
+	if github_version == "latest": echo_success(".")
+	else: error(".", 1)
+
+	let github_version = parse_github_version(["mustardamus/zieh@0.1.0"])
+
+	if github_version == "0.1.0": echo_success(".")
+	else: error(".", 1)
+}
+
+main(args) {
+	echo "--- parse_values()"
+	test_parse_values()
+
+	echo "--- parse_flag()"
+	test_parse_flag()
+
+	echo "--- parse_github_repo()"
+	test_parse_github_repo()
+
+	echo "--- parse_github_version()"
+	test_parse_github_version()
+}

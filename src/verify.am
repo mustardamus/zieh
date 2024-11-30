@@ -1,0 +1,32 @@
+import { lines, ends_with, split, len } from "std/text"
+
+pub fun extract_hash(content: Text, file_name: Text): Text {
+	let hash = ""
+
+	loop line in lines(content) {
+		if ends_with(line, file_name) {
+			let hash = split(line, " ")[0]
+			break
+		}
+	}
+
+	return hash
+}
+
+pub fun verify_file(file_path: Text, expected_hash: Text): Bool {
+	let verify_binary = ""
+	let hash_len = len(expected_hash)
+
+	if {
+		hash_len == 64: let verify_binary = "sha256sum"
+	}
+
+	// todo fail if no binary
+
+	let source_hash_out = unsafe ${verify_binary} {file_path}$
+	let source_hash = extract_hash(source_hash_out, file_path)
+	
+	if source_hash == expected_hash: return true
+	else: return false
+}
+

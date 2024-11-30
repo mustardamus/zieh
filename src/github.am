@@ -1,0 +1,28 @@
+import { lines, contains, lower, split, len, trim } from "std/text"
+import { json_extract } from "./json.am"
+
+pub fun get_release_json_url(repo_name: Text, version: Text): Text {
+	let base_url = "https://api.github.com/repos/{repo_name}/releases"
+
+	if version == "latest": return "{base_url}/{version}"
+	else: return "{base_url}/tags/v{version}"
+}
+
+pub fun get_release_json(repo_name: Text, version: Text): Text? {
+	let url = get_release_json_url(repo_name, version)
+	let json = unsafe $curl -sL {url}$
+	let status_code = json_extract(json, "status")
+
+	if status_code != "null" {
+		let message = json_extract(json, "message")
+		echo "Failed getting repo info for '{repo_name}' - {message} ({status_code})"
+		fail 1
+	}
+
+	return json
+}
+
+pub fun get_release_download_urls(release_json: Text): [Text] {
+	let urls = json_extract(release_json, "assets[].browser_download_url")
+	return lines(urls)
+}

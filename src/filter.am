@@ -1,0 +1,10 @@
+import { filter_download_urls } from "./github.am"
+
+pub fun filter_sums_urls(download_urls: [Text]): [Text] {
+	let and_filters = [
+		"/sha256sums", "/SHA256SUMS",
+		"/sha512sums", "/SHA512SUMS"
+	]
+
+	return filter_download_urls(download_urls, and_filters)
+}

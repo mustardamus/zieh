@@ -1,0 +1,16 @@
+import { echo_success, error } from "std/env"
+import { file_read } from "std/fs"
+import { json_extract } from "../src/json.am"
+
+fun test_json_extract() {
+	let test_json = file_read("test/fixtures/mvdan_sh.json")?
+	let login = json_extract(test_json, "author.login")
+
+	if login == "mvdan": echo_success(".")
+	else: error(".", 1)
+}
+
+main(args) {
+	echo "--- json_extract()"
+	test_json_extract()?
+}

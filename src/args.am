@@ -1,0 +1,84 @@
+import {
+	contains,
+	split,
+	trim,
+	len,
+	starts_with,
+	ends_with,
+	replace_once,
+	slice
+} from "std/text"
+import { array_last } from "./array.am"
+
+pub fun parse_values(args: [Text], key_char: Text, key_word: Text): [Text] {
+	let values = [Text]
+	let char = "-{key_char}" 
+	let word = "--{key_word}" 
+
+	loop index, arg in args {
+		if {
+			arg == char: values += [args[index + 1]]
+			arg == word: values += [args[index + 1]]
+
+			contains(arg, "=") {
+				let splitted = split(arg, "=")
+				let key = trim(splitted[0]) 
+				let val = trim(splitted[1])
+
+				if {
+					key == char: values += [val]
+					key == word: values += [val]
+				}
+			}
+		}
+	}
+
+	return values
+}
+
+pub fun parse_flag(args: [Text], flag_char: Text, flag_word: Text): Bool {
+	let match = false
+
+	loop arg in args {
+		if arg == "-{flag_char}": match = true
+		if arg == "--{flag_word}": match = true
+		if match == true: break
+	}
+
+	return match
+}
+
+pub fun parse_github_repo(args: [Text]): Text? {
+	let last_arg = array_last(args)
+	let github_repo = last_arg
+	let github_domain = "https://github.com/"
+
+	if starts_with(last_arg, github_domain) {
+		let github_repo = replace_once(last_arg, github_domain, "")
+	}
+
+	if contains(github_repo, "@") {
+		let github_repo = split(github_repo, "@")[0]
+	}
+
+	if ends_with(github_repo, "/") {
+		let github_repo = slice(github_repo, 0, len(github_repo) - 1)
+	}
+
+	if len(split(github_repo, "/")) != 2 {
+		fail 1
+	}
+
+	return github_repo
+}
+
+pub fun parse_github_version(args: [Text]): Text {
+	let last_arg = array_last(args)
+	let repo_split = split(last_arg, "@")
+
+	if len(repo_split) == 2 {
+		return repo_split[1]
+	}
+	
+	return "latest"
+}

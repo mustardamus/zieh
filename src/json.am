@@ -1,0 +1,3 @@
+pub fun json_extract(json: Text, path: Text): Text {
+	return unsafe $echo {json} | jq -r ".{path}"$
+}

@@ -1,0 +1,26 @@
+import { echo_success, error } from "std/env"
+import { join } from "std/text"
+import { extract_hash } from "../src/verify.am"
+
+fun test_extract_hash() {
+	let fixture_sums_arr = [
+		"hash1 file1.txt",
+		"hash2 file2.txt",
+		"hash3 file3.txt"
+	]
+	let fixture_sums = join(fixture_sums_arr, "\n")
+	let hash = extract_hash(fixture_sums, "file2.txt")
+
+	if hash == "hash2": echo_success(".")
+	else: error(".", 1)
+}
+
+fun test_verify_file() {}
+
+main(args) {
+	echo "--- extract_hash()"
+	test_extract_hash()
+
+	echo "--- verify_file()"
+	test_verify_file()
+}

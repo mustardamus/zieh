@@ -1,0 +1,39 @@
+import { exit } from "std/env"
+import { file_read, file_write } from "std/fs"
+import { lines, starts_with, join } from "std/text"
+
+main(args) {
+	let dist_path = "dist/zieh"
+
+	echo "Initial build..."
+	$amber src/main.am {dist_path}$ failed {
+		exit(1)
+	}
+
+	let out_lines = [
+		"#!/usr/bin/env bash",
+		"#",
+		"# zieh {unsafe $dist/zieh --version$}",
+		"# Source/Documentation: http://github.com/mustardamus/zieh",
+		"# Built with {unsafe $amber --version$}: https://amber-lang.com",
+		"#"
+	]
+
+	let license = file_read("LICENSE")?
+
+	echo "Add license..."
+	loop line in lines(license) {
+		out_lines += ["# {line}"]
+	}
+
+	let code = file_read(dist_path)?
+
+	echo "Add code..."
+	loop line in lines(code) {
+		if not starts_with(line, "#"): out_lines += [line]
+	}
+
+	echo "Write output to '{dist_path}'..."
+	file_write(dist_path, join(out_lines, "\n"))?
+	echo "Done."
+}

@@ -1,0 +1,40 @@
+import { echo_success, error } from "std/env"
+import { len } from "std/text"
+import { array_last, array_filter } from "../src/array.am"
+
+fun test_array_last() {
+	let arr = ["some", "args", "check"]
+	let last = array_last(arr)
+
+	if last == "check": echo_success(".")
+	else: error(".", 1)
+}
+
+fun test_array_filter() {
+	let arr = [
+		"v3.10.0/sha256sums.txt",
+		"v3.10.0/shfmt_v3.10.0_darwin_amd64",
+		"v3.10.0/shfmt_v3.10.0_darwin_arm64",
+		"v3.10.0/shfmt_v3.10.0_linux_arm",
+		"v3.10.0/shfmt_v3.10.0_linux_amd64"
+	]
+	let and_filters = ["linux", "arm,amd64"]
+	let matches = array_filter(arr, and_filters)
+
+	if len(matches) == 2: echo_success(".")
+	else: error(".", 1)
+
+	if matches[0] == "v3.10.0/shfmt_v3.10.0_linux_arm": echo_success(".")
+	else: error(".", 1)
+
+	if matches[1] == "v3.10.0/shfmt_v3.10.0_linux_amd64": echo_success(".")
+	else: error(".", 1)
+}
+
+main(args) {
+	echo "--- array_last()"
+	test_array_last()
+
+	echo "--- array_filter()"
+	test_array_filter()
+}

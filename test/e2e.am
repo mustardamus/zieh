@@ -1,0 +1,3 @@
+main(args) {
+	unsafe $dist/zieh mvdan/sh$
+}

@@ -1,0 +1,45 @@
+import { echo_success, error } from "std/env"
+import { dir_exist } from "std/fs"
+import { get_suffix, basename, create_tmp_dir } from "../src/fs.am"
+
+fun test_get_suffix() {
+	let suffix = get_suffix("/file/path/name")
+
+	if suffix == "": echo_success(".")
+	else: error(".", 1)
+
+	let suffix = get_suffix("/file/path/name.zip")
+
+	if suffix == "zip": echo_success(".")
+	else: error(".", 1)
+
+	let suffix = get_suffix("/file/path/name.tar.gz")
+
+	if suffix == "tar.gz": echo_success(".")
+	else: error(".", 1)
+}
+
+fun test_basename() {
+	let name = basename("/some/file/path/file.txt")
+
+	if name == "file.txt": echo_success(".")
+	else: error(".", 1)
+}
+
+fun test_create_tmp_dir() {
+	let tmp_path = create_tmp_dir()?
+
+	if dir_exist(tmp_path): echo_success(".")
+	else: error(".", 1)
+}
+
+main(args) {
+	echo "--- get_suffix()"
+	test_get_suffix()
+
+	echo "--- basename()"
+	test_basename()
+
+	echo "--- create_tmp_dir()"
+	test_create_tmp_dir()?
+}
